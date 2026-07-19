@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sommerkropp — Treningsprogram</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0D1B2A;
+    --surface:#14283D;
+    --surface-2:#1B3350;
+    --line:#23405C;
+    --sand:#E3B863;
+    --coral:#E9633B;
+    --foam:#EDF1F5;
+    --muted:#7C93A8;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--foam);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    padding-bottom:60px;
+  }
+  .wrap{max-width:760px; margin:0 auto; padding:28px 18px 0;}
+
+  /* HEADER */
+  header{margin-bottom:24px;}
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--sand);
+    margin-bottom:6px;
+  }
+  h1{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:32px;
+    font-weight:700;
+    letter-spacing:-0.01em;
+    margin-bottom:6px;
+  }
+  .sub{color:var(--muted); font-size:14.5px; line-height:1.5; max-width:56ch;}
+
+  /* TIDEMARK divider — signature element */
+  .tidemark{
+    position:relative;
+    height:22px;
+    margin:22px 0 20px;
+    display:flex;
+    align-items:center;
+  }
+  .tidemark::before{
+    content:'';
+    position:absolute;
+    left:0; right:0; top:50%;
+    height:1px;
+    background:linear-gradient(90deg, transparent, var(--line) 15%, var(--line) 85%, transparent);
+  }
+  .tidemark span{
+    position:relative;
+    background:var(--bg);
+    padding:0 10px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:.1em;
+    color:var(--muted);
+    text-transform:uppercase;
+    margin:0 auto;
+  }
+
+  /* TABS */
+  .tabs{
+    display:flex;
+    gap:4px;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:4px;
+    margin-bottom:24px;
+  }
+  .tab-btn{
+    flex:1;
+    background:transparent;
+    border:none;
+    color:var(--muted);
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;
+    font-size:14px;
+    padding:10px 8px;
+    border-radius:7px;
+    cursor:pointer;
+    transition:background .15s, color .15s;
+  }
+  .tab-btn.active{background:var(--surface-2); color:var(--sand);}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+
+  /* DAY CARDS */
+  .day-card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:12px;
+    margin-bottom:14px;
+    overflow:hidden;
+  }
+  .day-head{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:16px 18px;
+    cursor:pointer;
+    user-select:none;
+  }
+  .day-badge{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    font-weight:600;
+    color:var(--bg);
+    background:var(--sand);
+    border-radius:5px;
+    padding:3px 7px;
+    letter-spacing:.03em;
+    flex-shrink:0;
+  }
+  .day-badge.rest{background:var(--muted);}
+  .day-title{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:16px; flex:1;}
+  .day-focus{color:var(--muted); font-size:12.5px;}
+  .chev{color:var(--muted); font-size:13px; transition:transform .15s;}
+  .day-card.open .chev{transform:rotate(90deg);}
+  .day-body{display:none; border-top:1px solid var(--line); padding:6px 18px 16px;}
+  .day-card.open .day-body{display:block;}
+  .day-done-row{
+    display:flex; align-items:center; gap:8px;
+    padding:12px 0 8px;
+    font-size:13px; color:var(--muted);
+  }
+  .day-done-row input{width:16px; height:16px; accent-color:var(--coral);}
+
+  .exercise{
+    padding:12px 0;
+    border-top:1px solid var(--line);
+  }
+  .exercise:first-of-type{border-top:none;}
+  .ex-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    gap:10px;
+    margin-bottom:8px;
+  }
+  .ex-name{font-weight:600; font-size:14.5px;}
+  .ex-target{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    color:var(--sand);
+    white-space:nowrap;
+  }
+  .sets-row{display:flex; gap:6px; flex-wrap:wrap;}
+  .set-input-group{
+    display:flex; align-items:center;
+    background:var(--surface-2);
+    border:1px solid var(--line);
+    border-radius:7px;
+    padding:5px 7px;
+    gap:4px;
+  }
+  .set-input-group span{font-size:10px; color:var(--muted); font-family:'JetBrains Mono',monospace;}
+  .set-input-group input{
+    width:34px;
+    background:transparent;
+    border:none;
+    color:var(--foam);
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;
+    text-align:center;
+    outline:none;
+  }
+  .set-input-group input::-webkit-outer-spin-button,
+  .set-input-group input::-webkit-inner-spin-button{-webkit-appearance:none; margin:0;}
+
+  .pr-flag{
+    display:none;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10.5px;
+    color:var(--coral);
+    margin-top:5px;
+  }
+  .pr-flag.show{display:block;}
+
+  /* CARDIO */
+  .cardio-block{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:18px;
+    margin-bottom:14px;
+  }
+  .cardio-block h3{font-family:'Space Grotesk',sans-serif; font-size:15.5px; margin-bottom:6px; color:var(--sand);}
+  .cardio-block p{color:var(--muted); font-size:13.5px; line-height:1.6;}
+  .cardio-table{width:100%; border-collapse:collapse; margin-top:10px; font-size:13px;}
+  .cardio-table td{padding:8px 4px; border-top:1px solid var(--line);}
+  .cardio-table td:first-child{font-family:'JetBrains Mono',monospace; color:var(--sand); width:80px;}
+  .note-box{
+    background:var(--surface-2);
+    border-left:2px solid var(--coral);
+    border-radius:6px;
+    padding:12px 14px;
+    font-size:13px;
+    color:var(--muted);
+    line-height:1.6;
+    margin-top:8px;
+  }
+
+  /* PROGRESJON */
+  .weight-log{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:18px;
+    margin-bottom:16px;
+  }
+  .weight-log h3{font-family:'Space Grotesk',sans-serif; font-size:15.5px; margin-bottom:12px;}
+  .wl-form{display:flex; gap:8px; margin-bottom:14px;}
+  .wl-form input{
+    flex:1;
+    background:var(--surface-2);
+    border:1px solid var(--line);
+    border-radius:7px;
+    padding:9px 10px;
+    color:var(--foam);
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;
+  }
+  .wl-form button, .add-btn{
+    background:var(--coral);
+    color:var(--bg);
+    border:none;
+    border-radius:7px;
+    padding:9px 16px;
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;
+    font-size:13px;
+    cursor:pointer;
+  }
+  .wl-list{display:flex; flex-direction:column; gap:6px; max-height:180px; overflow-y:auto;}
+  .wl-row{
+    display:flex; justify-content:space-between;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12.5px;
+    color:var(--muted);
+    padding:6px 8px;
+    background:var(--surface-2);
+    border-radius:6px;
+  }
+  .wl-row span:last-child{color:var(--foam);}
+
+  /* TIDE GAUGE — signature progression visual */
+  .gauge-select{
+    background:var(--surface-2);
+    border:1px solid var(--line);
+    border-radius:7px;
+    padding:9px 10px;
+    color:var(--foam);
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    width:100%;
+    margin-bottom:14px;
+  }
+  .gauge-wrap{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:18px;
+  }
+  .gauge-empty{color:var(--muted); font-size:13px; text-align:center; padding:20px 0;}
+  .gauge{position:relative; height:140px; display:flex; align-items:flex-end; gap:10px; padding:0 4px 24px;}
+  .gauge-col{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; position:relative;}
+  .gauge-bar{
+    width:100%;
+    max-width:26px;
+    background:linear-gradient(180deg, var(--sand), var(--coral));
+    border-radius:4px 4px 0 0;
+    position:relative;
+    transition:height .3s;
+  }
+  .gauge-bar.pr::after{
+    content:'PR';
+    position:absolute;
+    top:-16px; left:50%; transform:translateX(-50%);
+    font-family:'JetBrains Mono',monospace;
+    font-size:9px;
+    color:var(--coral);
+  }
+  .gauge-label{
+    position:absolute;
+    bottom:-22px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:9.5px;
+    color:var(--muted);
+    white-space:nowrap;
+  }
+  .gauge-val{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;
+    color:var(--bg);
+    font-weight:600;
+    padding-bottom:2px;
+  }
+
+  footer{
+    text-align:center;
+    color:var(--muted);
+    font-size:11.5px;
+    font-family:'JetBrains Mono',monospace;
+    margin-top:30px;
+    padding:0 20px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Push / Pull / Legs — 6 dager</div>
+    <h1>Sommerkropp</h1>
+    <p class="sub">Skulderbredde, ryggV, definerte armer og synlig mage — bygget på splitten du allerede kjører. Logg vekt×reps hver økt for å se fremgangen svart på hvitt.</p>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="program">Program</button>
+    <button class="tab-btn" data-tab="cardio">Cardio</button>
+    <button class="tab-btn" data-tab="progresjon">Progresjon</button>
+  </div>
+
+  <!-- PROGRAM TAB -->
+  <div class="tab-panel active" id="tab-program">
+    <div id="days"></div>
+  </div>
+
+  <!-- CARDIO TAB -->
+  <div class="tab-panel" id="tab-cardio">
+    <div class="cardio-block">
+      <h3>Prinsippet</h3>
+      <p>Målet er fettforbrenning uten å spise av restitusjonen du trenger til styrkeøktene. Cardio legges derfor <em>etter</em> styrke, aldri før — og holdes kort og kontrollert.</p>
+    </div>
+
+    <div class="cardio-block">
+      <h3>Ukentlig cardio-oppsett</h3>
+      <table class="cardio-table">
+        <tr><td>Dag 1–5</td><td>15–20 min LISS rett etter styrkeøkten. Skråbenk gange (helning 8–12%, rolig tempo) eller sykkel. Puls i ro, du skal kunne prate i hele setninger.</td></tr>
+        <tr><td>Dag 6</td><td>1× HIIT-økt, 15–20 min. Eksempel: 8–10 runder med 30 sek høy intensitet / 90 sek rolig gange, på sykkel eller tredemølle.</td></tr>
+        <tr><td>Dag 7</td><td>30–40 min rolig gåtur (LISS). Uten løpeturene i bildet lenger er dette den enkleste måten å holde ukentlig kaloriforbrenning oppe uten å belaste restitusjonen.</td></tr>
+      </table>
+      <div class="note-box">Siden løpingen mot halvmaraton er ute av bildet, bærer LISS + HIIT nå hele cardio-jobben alene. Hold deg til oppsettet over — ikke legg til ekstra økter på toppen, da det går utover restitusjonen fra styrketreningen.</div>
+    </div>
+
+    <div class="cardio-block">
+      <h3>Hvorfor dette funker for beach body</h3>
+      <p>Skulderbredde og magemuskler kommer fra to ting: muskelbygging (militærpress, sidehev, kneb, rowing) og lavt nok fettlag til at det synes. LISS + HIIT i dette omfanget gir ekstra kaloriforbrenning uten å true styrken din, mens kaloriunderskuddet du allerede kjører gjør resten av jobben.</p>
+    </div>
+  </div>
+
+  <!-- PROGRESJON TAB -->
+  <div class="tab-panel" id="tab-progresjon">
+
+    <div class="weight-log">
+      <h3>Kroppsvekt</h3>
+      <div class="wl-form">
+        <input type="date" id="wDate">
+        <input type="number" step="0.1" id="wVal" placeholder="kg">
+        <button class="wl-form-btn" onclick="addWeight()">Legg til</button>
+      </div>
+      <div class="wl-list" id="weightList"></div>
+    </div>
+
+    <div class="tidemark"><span>Tidevannsmåler — styrkeprogresjon</span></div>
+
+    <select class="gauge-select" id="exerciseSelect" onchange="renderGauge()"></select>
+    <div class="gauge-wrap">
+      <div id="gaugeContainer"></div>
+    </div>
+
+  </div>
+
+  <footer>Data lagres lokalt på denne enheten · logg jevnlig for best oversikt</footer>
+</div>
+
+<script>
+// ---------- DATA MODEL ----------
+const PROGRAM = [
+  {
+    id:'d1', badge:'DAG 1', title:'Push A', focus:'Skulderfokus',
+    exercises:[
+      {id:'d1e1', name:'Militærpress (stang/hantler)', target:'4×8–12'},
+      {id:'d1e2', name:'Sittende hantel skulderpress', target:'3×8–12'},
+      {id:'d1e3', name:'Sidehev (lateral raise)', target:'4×12–15'},
+      {id:'d1e4', name:'Brystpress flatbenk', target:'3×8–12'},
+      {id:'d1e5', name:'Triceps pushdown', target:'3×10–15'},
+      {id:'d1e6', name:'Bakre delt flyes', target:'3×12–15'},
+    ]
+  },
+  {
+    id:'d2', badge:'DAG 2', title:'Pull A', focus:'Ryggbredde',
+    exercises:[
+      {id:'d2e1', name:'Pull-ups / lat pulldown bredt grep', target:'4×8–12'},
+      {id:'d2e2', name:'Sittende rowing', target:'3×10–12'},
+      {id:'d2e3', name:'Straight-arm pulldown', target:'3×12–15'},
+      {id:'d2e4', name:'Face pulls', target:'3×15'},
+      {id:'d2e5', name:'Hantel curl', target:'3×10–12'},
+      {id:'d2e6', name:'Hammer curl', target:'3×10–12'},
+    ]
+  },
+  {
+    id:'d3', badge:'DAG 3', title:'Legs A + Core', focus:'Bein og mage',
+    exercises:[
+      {id:'d3e1', name:'Knebøy', target:'4×8–10'},
+      {id:'d3e2', name:'Rumensk markløft', target:'3×10–12'},
+      {id:'d3e3', name:'Beinpress', target:'3×10–12'},
+      {id:'d3e4', name:'Leg curl', target:'3×12'},
+      {id:'d3e5', name:'Hengende beinløft', target:'3×12–15'},
+      {id:'d3e6', name:'Cable crunch', target:'3×15'},
+    ]
+  },
+  {
+    id:'d4', badge:'DAG 4', title:'Push B', focus:'Brystfokus',
+    exercises:[
+      {id:'d4e1', name:'Benkpress', target:'4×6–10'},
+      {id:'d4e2', name:'Skråbenk hantelpress', target:'3×8–12'},
+      {id:'d4e3', name:'Cable flyes', target:'3×12–15'},
+      {id:'d4e4', name:'Arnold press', target:'3×10–12'},
+      {id:'d4e5', name:'Sidehev kabel', target:'3×15'},
+      {id:'d4e6', name:'Tricep dips / close grip', target:'3×8–12'},
+    ]
+  },
+  {
+    id:'d5', badge:'DAG 5', title:'Pull B', focus:'Ryggtykkelse',
+    exercises:[
+      {id:'d5e1', name:'Markløft', target:'4×5–8'},
+      {id:'d5e2', name:'Stang / T-bar rowing', target:'3×8–10'},
+      {id:'d5e3', name:'Chest supported rowing', target:'3×10–12'},
+      {id:'d5e4', name:'Lat pulldown smalt grep', target:'3×10–12'},
+      {id:'d5e5', name:'Preacher curl', target:'3×10–12'},
+      {id:'d5e6', name:'Cable curl', target:'3×12–15'},
+    ]
+  },
+  {
+    id:'d6', badge:'DAG 6', title:'Legs B + Core', focus:'Bein og mage',
+    exercises:[
+      {id:'d6e1', name:'Frontbøy / bulgarian split squat', target:'4×8–10'},
+      {id:'d6e2', name:'Utfall', target:'3×10 per ben'},
+      {id:'d6e3', name:'Leg extension', target:'3×15'},
+      {id:'d6e4', name:'Stående legg raises', target:'4×15–20'},
+      {id:'d6e5', name:'Plank med vekt', target:'3×45–60s'},
+      {id:'d6e6', name:'Russian twists', target:'3×20'},
+    ]
+  },
+  {
+    id:'d7', badge:'DAG 7', title:'Hvile', focus:'Restitusjon', rest:true, exercises:[]
+  },
+];
+
+let STATE = { logs:{}, bodyweight:[], checks:{} };
+
+// ---------- STORAGE (localStorage — fungerer frittstående, uten Claude) ----------
+function loadState(){
+  try{
+    const raw = localStorage.getItem('sommerkropp-program-data');
+    if(raw){ STATE = JSON.parse(raw); }
+  }catch(e){ /* ingen data ennå */ }
+}
+function saveState(){
+  try{ localStorage.setItem('sommerkropp-program-data', JSON.stringify(STATE)); }
+  catch(e){ console.error('Lagringsfeil', e); }
+}
+
+// ---------- HELPERS ----------
+function setCount(target){
+  const m = target.match(/^(\d+)×/);
+  return m ? parseInt(m[1]) : 3;
+}
+function repRange(target){
+  const m = target.match(/×(\d+)(?:–(\d+))?/);
+  if(!m) return {min:8,max:12};
+  return { min:parseInt(m[1]), max: m[2] ? parseInt(m[2]) : parseInt(m[1]) };
+}
+function todayKey(){
+  const d = new Date();
+  return d.toISOString().slice(0,10);
+}
+
+// ---------- RENDER PROGRAM ----------
+function renderDays(){
+  const container = document.getElementById('days');
+  container.innerHTML = '';
+  PROGRAM.forEach(day=>{
+    const card = document.createElement('div');
+    card.className = 'day-card';
+    card.id = 'card-'+day.id;
+
+    const head = document.createElement('div');
+    head.className = 'day-head';
+    head.onclick = ()=> card.classList.toggle('open');
+    head.innerHTML = `
+      <span class="day-badge ${day.rest?'rest':''}">${day.badge}</span>
+      <div style="flex:1">
+        <div class="day-title">${day.title}</div>
+        <div class="day-focus">${day.focus}</div>
+      </div>
+      <span class="chev">›</span>
+    `;
+    card.appendChild(head);
+
+    const body = document.createElement('div');
+    body.className = 'day-body';
+
+    if(!day.rest){
+      const doneRow = document.createElement('div');
+      doneRow.className = 'day-done-row';
+      const checked = STATE.checks[day.id+'_'+todayKey()] ? 'checked' : '';
+      doneRow.innerHTML = `<input type="checkbox" id="chk-${day.id}" ${checked}> <label for="chk-${day.id}">Merk dagens økt som fullført</label>`;
+      body.appendChild(doneRow);
+      doneRow.querySelector('input').onchange = (e)=>{
+        STATE.checks[day.id+'_'+todayKey()] = e.target.checked;
+        saveState();
+      };
+
+      day.exercises.forEach(ex=>{
+        const nSets = setCount(ex.target);
+        const exDiv = document.createElement('div');
+        exDiv.className = 'exercise';
+        let setsHtml = '';
+        for(let i=1;i<=nSets;i++){
+          const key = ex.id+'_s'+i;
+          const saved = (STATE.logs[key] && STATE.logs[key][STATE.logs[key].length-1]) || {};
+          setsHtml += `
+            <div class="set-input-group">
+              <span>${i}</span>
+              <input type="number" placeholder="kg" data-key="${key}" data-field="w" value="${saved.w ?? ''}">
+              <span>×</span>
+              <input type="number" placeholder="reps" data-key="${key}" data-field="r" value="${saved.r ?? ''}">
+            </div>`;
+        }
+        exDiv.innerHTML = `
+          <div class="ex-top">
+            <span class="ex-name">${ex.name}</span>
+            <span class="ex-target">${ex.target}</span>
+          </div>
+          <div class="sets-row">${setsHtml}</div>
+          <div class="pr-flag" id="pr-${ex.id}">Ny PR — vurder å øke vekten neste økt</div>
+        `;
+        body.appendChild(exDiv);
+
+        exDiv.querySelectorAll('input').forEach(inp=>{
+          inp.addEventListener('change', ()=> handleSetInput(ex, inp));
+        });
+      });
+    } else {
+      body.innerHTML = `<div class="cardio-block" style="border:none; padding:14px 0;"><p>Full restitusjon, eller en rolig gåtur. Ingen strukturert cardio i dag.</p></div>`;
+    }
+
+    card.appendChild(body);
+    container.appendChild(card);
+  });
+}
+
+function handleSetInput(ex, inp){
+  const key = inp.dataset.key;
+  const field = inp.dataset.field;
+  if(!STATE.logs[key]) STATE.logs[key] = [];
+  let entries = STATE.logs[key];
+  let last = entries[entries.length-1];
+  if(!last || last.date !== todayKey()){
+    last = { date: todayKey(), w:null, r:null };
+    entries.push(last);
+  }
+  last[field] = inp.value ? parseFloat(inp.value) : null;
+  saveState();
+  checkPR(ex);
+}
+
+function checkPR(ex){
+  const range = repRange(ex.target);
+  const nSets = setCount(ex.target);
+  let allHitTop = true;
+  for(let i=1;i<=nSets;i++){
+    const key = ex.id+'_s'+i;
+    const entries = STATE.logs[key];
+    const last = entries && entries[entries.length-1];
+    if(!last || !last.r || last.r < range.max){ allHitTop = false; break; }
+  }
+  const flag = document.getElementById('pr-'+ex.id);
+  if(flag) flag.classList.toggle('show', allHitTop);
+}
+
+// ---------- TABS ----------
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.onclick = ()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+    if(btn.dataset.tab === 'progresjon'){ renderWeightList(); renderGauge(); }
+  };
+});
+
+// ---------- BODYWEIGHT ----------
+async function addWeight(){
+  const dateEl = document.getElementById('wDate');
+  const valEl = document.getElementById('wVal');
+  if(!dateEl.value || !valEl.value) return;
+  STATE.bodyweight.push({ date: dateEl.value, kg: parseFloat(valEl.value) });
+  STATE.bodyweight.sort((a,b)=> a.date.localeCompare(b.date));
+  saveState();
+  valEl.value = '';
+  renderWeightList();
+}
+function renderWeightList(){
+  const list = document.getElementById('weightList');
+  list.innerHTML = '';
+  [...STATE.bodyweight].reverse().forEach(entry=>{
+    const row = document.createElement('div');
+    row.className = 'wl-row';
+    row.innerHTML = `<span>${entry.date}</span><span>${entry.kg} kg</span>`;
+    list.appendChild(row);
+  });
+  if(STATE.bodyweight.length === 0){
+    list.innerHTML = '<div class="wl-row"><span>Ingen registreringer ennå</span></div>';
+  }
+}
+
+// ---------- TIDE GAUGE ----------
+function populateExerciseSelect(){
+  const sel = document.getElementById('exerciseSelect');
+  sel.innerHTML = '';
+  PROGRAM.forEach(day=>{
+    day.exercises.forEach(ex=>{
+      const opt = document.createElement('option');
+      opt.value = ex.id;
+      opt.textContent = `${day.title} — ${ex.name}`;
+      sel.appendChild(opt);
+    });
+  });
+}
+
+function renderGauge(){
+  const sel = document.getElementById('exerciseSelect');
+  const exId = sel.value;
+  const container = document.getElementById('gaugeContainer');
+  if(!exId){ container.innerHTML = '<div class="gauge-empty">Velg en øvelse</div>'; return; }
+
+  // aggregate top-weight-per-day across the first set's history (representative)
+  const key = exId+'_s1';
+  const entries = (STATE.logs[key] || []).filter(e=> e.w != null);
+  if(entries.length === 0){
+    container.innerHTML = '<div class="gauge-empty">Ingen logger for denne øvelsen ennå. Fyll inn vekt og reps under Program-fanen.</div>';
+    return;
+  }
+
+  const maxW = Math.max(...entries.map(e=>e.w));
+  const gauge = document.createElement('div');
+  gauge.className = 'gauge';
+  entries.slice(-8).forEach(e=>{
+    const pct = Math.max(18, (e.w / maxW) * 100);
+    const isPR = e.w === maxW;
+    const col = document.createElement('div');
+    col.className = 'gauge-col';
+    col.innerHTML = `
+      <div class="gauge-bar ${isPR?'pr':''}" style="height:${pct}%">
+        <div class="gauge-val" style="position:absolute; top:-16px; left:50%; transform:translateX(-50%); color:var(--foam);">${e.w}</div>
+      </div>
+      <div class="gauge-label">${e.date.slice(5)}</div>
+    `;
+    gauge.appendChild(col);
+  });
+  container.innerHTML = '';
+  container.appendChild(gauge);
+}
+
+// ---------- INIT ----------
+(async function init(){
+  loadState();
+  renderDays();
+  populateExerciseSelect();
+  document.getElementById('wDate').value = todayKey();
+  renderWeightList();
+  renderGauge();
+})();
+</script>
+</body>
+</html>
